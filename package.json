@@ -1,0 +1,21 @@
+{
+  "name": "concurrent-stream",
+  "version": "1.0.0",
+  "description": "Combine streams into concurrent stream",
+  "main": "concurrentStream.js",
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha *_test.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "byline": "^4.2.1",
+    "stream-serializer": "^1.1.2",
+    "through2": "^2.0.0"
+  },
+  "devDependencies": {
+    "mocha": "^2.2.5",
+    "sinon": "^1.15.4",
+    "through2": "^2.0.0"
+  }
+}
