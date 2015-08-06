@@ -6,7 +6,7 @@ var net = require('net');
 var sinon = require('sinon');
 var assert = require('assert');
 
-describe.only('Concurrent Stream', function() {
+describe('Concurrent Stream', function() {
     it('should send and receive', function(done) {
         var receiveCB = sinon.spy();
         //var endCB = sinon.spy();
@@ -49,7 +49,7 @@ describe.only('Concurrent Stream', function() {
         dummyPass.end();
     });
 
-    it('should send and receive over network', function(done) {
+    it.only('should send and receive over network', function(done) {
         var receiveCB = sinon.spy();
 
         var server1 = net.createServer(function(data) {

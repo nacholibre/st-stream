@@ -26,6 +26,10 @@ function ConcurrentStream(inStreams) {
     this.removeAllListeners('finish');
     this.removeAllListeners('prefinish');
 
+    //this.on('end', function() {
+    //    console.log('EEEEEEEEEENDED');
+    //});
+
     //this.on('finish', function() {
     //    console.log('finito');
     //});
@@ -34,10 +38,25 @@ function ConcurrentStream(inStreams) {
 util.inherits(ConcurrentStream, stream.Transform);
 
 //ConcurrentStream.prototype._flush = function(done) {
+//    var finishEvents = self.listeners('finish');
+//
+//    this.removeAllListeners('finish');
+//
+//
 //    console.log('flush');
-//    this.emit('prefinish');
-//    this.emit('end');
-//    done();
+//    //this.emit('prefinish');
+//    //this.emit('end');
+//    var interval = setInterval(function() {
+//        if (self.endedStreams === self.streams.length) {
+//            //finishEvents.forEach(function(func) {
+//            //    self.on('finish', func);
+//            //});
+//
+//            done();
+//
+//            clearInterval(interval);
+//        }
+//    }, 100);
 //};
 
 ConcurrentStream.prototype._getAvailableStream = function() {
@@ -56,19 +75,27 @@ ConcurrentStream.prototype.appendStream = function(stream) {
 ConcurrentStream.prototype._attachEventToStream = function(mystream) {
     var lineStream = new byline.LineStream();
 
-    mystream.pipe(lineStream).on('data', function(data) {
+    var dest = mystream.pipe(lineStream).on('data', function(data) {
         self.push(JSON.parse(data));
     });
 
-    lineStream.on('finish', function() {
-        console.log('stream finished');
+    //self.on('end', function() {
+    //    mystream.end();
+    //});
+
+    //lineStream.on('end', function() {
+    //    console.log('stream ended');
+    //});
+
+    dest.on('finish', function() {
+        //console.log('stream finished');
         self.endedStreams++;
 
         if (self.endedStreams === self.streams.length) {
             self.push(null);
-            mystream.end();
-            self.emit('finish');
-            console.log('EMIT END');
+            //mystream.end();
+            //self.emit('finish');
+            //console.log('EMIT END');
         }
     });
 };
