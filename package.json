@@ -1,6 +1,6 @@
 {
   "name": "concurrent-stream",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Combine streams into concurrent stream",
   "main": "concurrentStream.js",
   "scripts": {
@@ -17,5 +17,10 @@
     "mocha": "^2.2.5",
     "sinon": "^1.15.4",
     "through2": "^2.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/nacholibre/concurrentstream.git"
+  },
+  "homepage": "https://bitbucket.org/nacholibre/concurrentstream#readme"
 }
