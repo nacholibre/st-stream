@@ -1,4 +1,6 @@
 # st-stream
+Install with `npm install st-stream`
+###example
 ```javascript
 var stStream = require('st-stream');
 
