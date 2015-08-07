@@ -1,16 +1,15 @@
 {
-  "name": "concurrent-stream",
+  "name": "st-stream",
   "version": "0.1.0",
-  "description": "Combine streams into concurrent stream",
-  "main": "concurrentStream.js",
+  "description": "Combine transform streams into one stream",
+  "main": "stStream.js",
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha *_test.js"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Yoan Arnaudov <jonidev@gmail.com>",
+  "license": "MIT",
   "dependencies": {
     "byline": "^4.2.1",
-    "stream-serializer": "^1.1.2",
     "through2": "^2.0.0"
   },
   "devDependencies": {
@@ -20,7 +19,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org/nacholibre/concurrentstream.git"
-  },
-  "homepage": "https://bitbucket.org/nacholibre/concurrentstream#readme"
+    "url": "http://github.com/nacholibre/st-stream.git"
+  }
 }
