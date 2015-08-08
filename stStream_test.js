@@ -1,13 +1,13 @@
 'use strict';
 
-var stream = require('stream');
-//var through2 = require('through2');
+var sinon = require('sinon');
 var net = require('net');
 var stStream = require('./stStream.js');
-//var ConcurrentStream = require('./concurrentStream.js');
 
-describe('Stream Duplex test', function() {
-    it('should send and transform data', function(doneTest) {
+describe('st stream main tests', function() {
+    it('should send and transform data from local stream', function(doneTest) {
+        var dataSpy = sinon.spy();
+
         var transform1 = stStream.transform(function(obj, e, done) {
             obj.msg = obj.msg + ' - first transform';
             this.push(obj);
@@ -28,18 +28,18 @@ describe('Stream Duplex test', function() {
         myStream.end();
 
         myStream.on('data', function(objData) {
-            console.log(objData);
+            dataSpy(objData);
         }).on('finish', function() {
+            sinon.assert.calledWith(dataSpy, {msg: 'hello - first transform'});
+            sinon.assert.calledWith(dataSpy, {msg: 'hello2 - second transform'});
+            sinon.assert.calledWith(dataSpy, {msg: 'hello3 - first transform'});
+            sinon.assert.calledThrice(dataSpy);
             doneTest();
         });
     });
 
-    it('should test', function(doneTest) {
-        var transform1 = stStream.transform(function(data, enc, done) {
-            data.msg = data.msg + ':stream1';
-            this.push(data);
-            done();
-        });
+    it.skip('should send and receive on multiple network streams', function(doneTest) {
+        var dataSpy = sinon.spy();
 
         var server1 = net.createServer(function(data) {
             var transformStream = stStream.transform(function(obj, e, done) {
@@ -49,16 +49,68 @@ describe('Stream Duplex test', function() {
             });
 
             data.pipe(transformStream).pipe(data);
-
-            //setTimeout(function() {
-            //    data.end();
-            //}, 100);
         });
         server1.listen(3001);
 
         var client1 = net.connect(3001);
 
-        var cd = stStream.combine([client1, transform1]);
+        var server2 = net.createServer(function(data) {
+            var transformStream = stStream.transform(function(obj, e, done) {
+                obj.msg = obj.msg + ':server2';
+                this.push(obj);
+                done();
+            });
+
+            data.pipe(transformStream).pipe(data);
+        });
+        server2.listen(3002);
+
+        var client2 = net.connect(3002);
+
+        var cd = stStream.combine([client1, client2]);
+
+        cd.write({'msg': 'hello'});
+        cd.write({'msg': 'hello2'});
+        cd.write({'msg': 'hello3'});
+        cd.end();
+
+        var receivedDataServers = {};
+        cd.on('data', function(d) {
+            var splitted = d.msg.split(':');
+            dataSpy(d);
+        }).on('finish', function() {
+            sinon.assert.calledWith(dataSpy, {msg: 'hello:server1'});
+            sinon.assert.calledWith(dataSpy, {msg: 'hello2:server1'});
+            sinon.assert.calledWith(dataSpy, {msg: 'hello3:server1'});
+            sinon.assert.calledThrice(dataSpy);
+
+            doneTest();
+        });
+    });
+
+    it('should send and receive over network stream', function(doneTest) {
+        var dataSpy = sinon.spy();
+
+        //var transform1 = stStream.transform(function(data, enc, done) {
+        //    data.msg = data.msg + ':stream1';
+        //    this.push(data);
+        //    done();
+        //});
+
+        var server1 = net.createServer(function(data) {
+            var transformStream = stStream.transform(function(obj, e, done) {
+                obj.msg = obj.msg + ':server1';
+                this.push(obj);
+                done();
+            });
+
+            data.pipe(transformStream).pipe(data);
+        });
+        server1.listen(3001);
+
+        var client1 = net.connect(3001);
+
+        var cd = stStream.combine([client1]);
 
         cd.write({'msg': 'hello'});
         cd.write({'msg': 'hello2'});
@@ -66,19 +118,14 @@ describe('Stream Duplex test', function() {
         cd.end();
 
         cd.on('data', function(d) {
-            console.log('data received');
-            console.log(d);
+            dataSpy(d);
         }).on('finish', function() {
-            console.log('finished');
+            sinon.assert.calledWith(dataSpy, {msg: 'hello:server1'});
+            sinon.assert.calledWith(dataSpy, {msg: 'hello2:server1'});
+            sinon.assert.calledWith(dataSpy, {msg: 'hello3:server1'});
+            sinon.assert.calledThrice(dataSpy);
+
             doneTest();
         });
-
-        //dest.on('finish', function() {
-        //    console.log('FINISH EVENT FIRED');
-        //});
-
-        //dest.on('end', function() {
-        //    console.log('END EVENT FIRED');
-        //});
     });
 });
