@@ -200,5 +200,15 @@ module.exports.transform = function(func, noMoreDataCB) {
 
     var dest = lineStream.pipe(trf2).pipe(mytrf).pipe(trf3);
 
-    return duplexer(lineStream, dest);
+    var returnedStream = duplexer(lineStream, dest);
+
+    returnedStream.pause = function() {
+        lineStream.pause();
+    };
+
+    returnedStream.resume = function() {
+        lineStream.resume();
+    };
+
+    return returnedStream;
 };

@@ -128,4 +128,7 @@ describe('st stream main tests', function() {
             doneTest();
         });
     });
+
+    it('should end stream on stream.push(null)', function(doneTest) {
+    });
 });
