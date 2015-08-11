@@ -63,7 +63,7 @@ StStream.prototype.end = function(chunk, encoding, cb) {
 
     var finishInterval = setInterval(function() {
         //console.log(self.endedStreams);
-        if (self.endedStreams === self.streams.length) {
+        if (self.endedStreams === self.allStreams.length) {
             realEnd.bind(self)(chunk, encoding, cb);
             clearInterval(finishInterval);
         }
@@ -71,7 +71,7 @@ StStream.prototype.end = function(chunk, encoding, cb) {
 };
 
 StStream.prototype._read = function() {
-    if (self.endedStreams === self.streams.length) {
+    if (self.endedStreams === self.allStreams.length) {
         this.push(null);
     }
     //console.log('read');

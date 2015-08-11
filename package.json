@@ -1,6 +1,6 @@
 {
   "name": "st-stream",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Combine transform streams into one stream",
   "main": "stStream.js",
   "scripts": {

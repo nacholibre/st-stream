@@ -2,6 +2,7 @@
 
 var sinon = require('sinon');
 var net = require('net');
+var stream = require('stream');
 var stStream = require('./stStream.js');
 
 describe('st stream main tests', function() {
@@ -129,6 +130,41 @@ describe('st stream main tests', function() {
         });
     });
 
-    it('should end stream on stream.push(null)', function(doneTest) {
+    it.skip('should end stream on stream.push(null)', function(doneTest) {
+    });
+
+    it.skip('should buffer data', function(doneTest) {
+        var server1 = net.createServer(function(data) {
+            var transformStream = stStream.transform(function(obj, e, done) {
+                obj.msg = obj.msg + ':server1';
+                this.push(obj);
+                done();
+            });
+
+            data.pipe(transformStream).pipe(data);
+        });
+        server1.listen(3001);
+
+        var client1 = net.connect(3001);
+
+        var cd = stStream.combine([client1]);
+
+        var readStream = new stream.Readable({objectMode: true});
+
+        var i = 0;
+        readStream._read = function() {
+            this.push({msg: 'hello' + i});
+            i++;
+            console.log(i);
+            //if (i > 100) {
+            //    this.push(null);
+            //}
+        };
+
+        readStream.pipe(cd).on('data', function(d) {
+            console.log(d);
+        }).on('finish', function() {
+            doneTest();
+        });
     });
 });
